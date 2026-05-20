@@ -44,6 +44,7 @@
           <label class="form-label" for="password">Senha</label>
           <input id="password" type="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
+        <button id="forgot-password-link" type="button" class="auth-link-btn">Esqueci minha senha</button>
         <button type="submit" class="btn btn-primary">Entrar</button>
       </form>
     </div>
@@ -74,6 +75,26 @@
   </div>
 </div>
 
+<div id="forgot-modal" class="modal-overlay" aria-hidden="true">
+  <div class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="forgot-title">
+    <div class="modal-header">
+      <h2 id="forgot-title" class="modal-title">Recuperar senha</h2>
+      <button id="forgot-close" class="modal-close" type="button" aria-label="Fechar">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="auth-subtitle auth-modal-subtitle">Digite seu e-mail e enviaremos um link para redefinir a senha.</p>
+      <div id="forgot-alert" class="alert alert-error"></div>
+      <form id="forgot-form" autocomplete="on">
+        <div class="form-group form-group-tight">
+          <label class="form-label" for="forgot-email">E-mail</label>
+          <input id="forgot-email" type="email" class="form-input" placeholder="seu@email.com" required autocomplete="email">
+        </div>
+        <button id="forgot-submit" type="submit" class="btn btn-primary">Enviar link de redefinição</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ── Scripts ── -->
 <!-- SDK do Supabase via CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -86,6 +107,7 @@
   // Ativa os formulários
   setupLoginForm();
   setupRegisterForm();
+  setupForgotPasswordModal();
 
   /** Alterna entre as abas de Login e Cadastro */
   function mostrarTab(tab) {

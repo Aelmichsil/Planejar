@@ -54,6 +54,17 @@ async function signUp(email, password) {
   return data;
 }
 
+/** Envia e-mail com link para redefinição de senha */
+async function sendPasswordReset(email) {
+  const basePath = window.location.pathname.replace(/[^/]*$/, '');
+  const isFileProtocol = window.location.protocol === 'file:';
+  const redirectTo = isFileProtocol ? undefined : `${window.location.origin}${basePath}reset-password.html`;
+  const options = redirectTo ? { redirectTo } : undefined;
+  const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, options);
+  if (error) throw error;
+  return data;
+}
+
 /** Desloga o usuário e redireciona para o login */
 async function signOut() {
   await supabaseClient.auth.signOut();
@@ -74,6 +85,7 @@ function setupLoginForm() {
     const password = form.querySelector('#password').value;
     const btn      = form.querySelector('[type="submit"]');
 
+    alertEl.className = 'alert alert-error';
     alertEl.classList.remove('show');
     btn.disabled = true;
     btn.textContent = 'Entrando…';
@@ -82,11 +94,74 @@ function setupLoginForm() {
       await signIn(email, password);
       window.location.href = 'dashboard.html';
     } catch (err) {
+      alertEl.className = 'alert alert-error show';
       alertEl.textContent = traduzirErro(err.message);
-      alertEl.classList.add('show');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Entrar';
+    }
+  });
+
+}
+
+/** Configura modal de recuperação de senha (login.html) */
+function setupForgotPasswordModal() {
+  const modal = document.getElementById('forgot-modal');
+  const openBtn = document.getElementById('forgot-password-link');
+  const closeBtn = document.getElementById('forgot-close');
+  const form = document.getElementById('forgot-form');
+  const emailInput = document.getElementById('forgot-email');
+  const loginEmailInput = document.getElementById('email');
+  const submitBtn = document.getElementById('forgot-submit');
+  const alertEl = document.getElementById('forgot-alert');
+
+  if (!modal || !openBtn || !closeBtn || !form || !emailInput || !submitBtn || !alertEl) return;
+
+  const abrirModal = () => {
+    emailInput.value = (loginEmailInput?.value || '').trim();
+    alertEl.className = 'alert alert-error';
+    alertEl.classList.remove('show');
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    emailInput.focus();
+  };
+
+  const fecharModal = () => {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  openBtn.addEventListener('click', abrirModal);
+  closeBtn.addEventListener('click', fecharModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) fecharModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) fecharModal();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+
+    alertEl.className = 'alert alert-error';
+    alertEl.classList.remove('show');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando link…';
+
+    try {
+      await sendPasswordReset(email);
+      alertEl.className = 'alert alert-success show';
+      alertEl.textContent = 'Se o e-mail existir, você receberá um link para redefinir a senha.';
+    } catch (err) {
+      alertEl.className = 'alert alert-error show';
+      alertEl.textContent = traduzirErro(err.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar link de redefinição';
     }
   });
 }
