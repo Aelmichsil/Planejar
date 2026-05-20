@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejar — Entrar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ──────────────────────────────────────────
+     PÁGINA DE AUTENTICAÇÃO (Login + Cadastro)
+     A estrutura usa duas "tabs" simples
+     ────────────────────────────────────────── -->
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon">🗂️</div>
+      <span class="logo-name">Planejar</span>
+    </div>
+
+    <!-- Tabs de navegação entre Login e Cadastro -->
+    <div style="display:flex;gap:0;margin-bottom:28px;background:var(--bg);border-radius:var(--radius);padding:4px">
+      <button id="tab-login"    class="btn" style="flex:1;background:var(--surface);border-radius:6px;font-size:.88rem"
+              onclick="mostrarTab('login')">Entrar</button>
+      <button id="tab-cadastro" class="btn btn-ghost" style="flex:1;font-size:.88rem"
+              onclick="mostrarTab('cadastro')">Criar conta</button>
+    </div>
+
+    <!-- ── Formulário de Login ── -->
+    <div id="section-login">
+      <p class="auth-subtitle">Bem-vindo de volta! Acesse sua conta.</p>
+
+      <div id="auth-alert" class="alert alert-error"></div>
+
+      <form id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label class="form-label" for="email">E-mail</label>
+          <input id="email" type="email" class="form-input" placeholder="seu@email.com" required autocomplete="username">
+        </div>
+        <div class="form-group" style="margin-bottom:24px">
+          <label class="form-label" for="password">Senha</label>
+          <input id="password" type="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+    </div>
+
+    <!-- ── Formulário de Cadastro ── -->
+    <div id="section-cadastro" style="display:none">
+      <p class="auth-subtitle">Crie sua conta gratuita e comece a planejar.</p>
+
+      <div id="register-alert" class="alert alert-error"></div>
+
+      <form id="register-form" autocomplete="off">
+        <div class="form-group">
+          <label class="form-label" for="reg-email">E-mail</label>
+          <input id="reg-email" type="email" class="form-input" placeholder="seu@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Senha</label>
+          <input id="reg-password" type="password" class="form-input" placeholder="Mínimo 6 caracteres" required>
+        </div>
+        <div class="form-group" style="margin-bottom:24px">
+          <label class="form-label" for="reg-confirm">Confirmar senha</label>
+          <input id="reg-confirm" type="password" class="form-input" placeholder="Repita a senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Criar conta</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Scripts ── -->
+<!-- SDK do Supabase via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Redireciona para dashboard se já estiver logado
+  redirectIfLoggedIn();
+
+  // Ativa os formulários
+  setupLoginForm();
+  setupRegisterForm();
+
+  /** Alterna entre as abas de Login e Cadastro */
+  function mostrarTab(tab) {
+    const loginSection   = document.getElementById('section-login');
+    const cadastroSection= document.getElementById('section-cadastro');
+    const btnLogin       = document.getElementById('tab-login');
+    const btnCadastro    = document.getElementById('tab-cadastro');
+
+    if (tab === 'login') {
+      loginSection.style.display   = 'block';
+      cadastroSection.style.display= 'none';
+      btnLogin.style.background    = 'var(--surface)';
+      btnLogin.className           = 'btn';
+      btnCadastro.className        = 'btn btn-ghost';
+      btnCadastro.style.background = '';
+    } else {
+      loginSection.style.display   = 'none';
+      cadastroSection.style.display= 'block';
+      btnCadastro.style.background = 'var(--surface)';
+      btnCadastro.className        = 'btn';
+      btnLogin.className           = 'btn btn-ghost';
+      btnLogin.style.background    = '';
+    }
+  }
+</script>
+</body>
+</html>

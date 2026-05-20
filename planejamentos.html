@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejar — Planejamentos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ──────────────────────────────────────────
+     PÁGINA DE PLANEJAMENTOS
+     Listagem + CRUD + Painel de Tarefas
+     ────────────────────────────────────────── -->
+<div class="app-layout">
+
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- ══════════════════════════════
+       SIDEBAR
+       ══════════════════════════════ -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🗂️</div>
+        <span class="logo-name">Planejar</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Menu</span>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a href="planejamentos.html" class="nav-item active">
+        <span class="nav-icon">🗂️</span> Planejamentos
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div style="overflow:hidden;flex:1">
+          <div class="user-name"  id="user-name">Carregando…</div>
+          <div class="user-email" id="user-email"></div>
+        </div>
+      </div>
+      <button id="btn-logout" class="btn btn-ghost" style="width:100%;margin-top:8px;justify-content:flex-start;gap:8px">
+        🚪 Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════
+       CONTEÚDO
+       ══════════════════════════════ -->
+  <div class="main-content">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="menu-toggle" class="menu-toggle">☰</button>
+        <span class="topbar-title">Planejamentos</span>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-novo-plan" class="btn btn-primary btn-sm">+ Novo Planejamento</button>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- ── Filtros ── -->
+      <div class="filters-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="search-plan" type="text" class="form-input search-input" placeholder="Buscar planejamento…">
+        </div>
+        <select id="filter-status" class="form-select filter-select">
+          <option value="">Todos os status</option>
+          <option value="pending">Pendente</option>
+          <option value="in_progress">Em andamento</option>
+          <option value="done">Concluído</option>
+          <option value="cancelled">Cancelado</option>
+        </select>
+        <select id="filter-priority" class="form-select filter-select">
+          <option value="">Todas as prioridades</option>
+          <option value="high">Alta</option>
+          <option value="medium">Média</option>
+          <option value="low">Baixa</option>
+        </select>
+      </div>
+
+      <!-- ── Tabela de Planejamentos ── -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+              <th>Início</th>
+              <th>Prazo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="plan-tbody">
+            <tr class="loading-row">
+              <td colspan="6"><span class="spinner"></span> Carregando…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           PAINEL DE TAREFAS
+           Aparece abaixo quando um planejamento
+           é selecionado clicando em "Tarefas"
+           ══════════════════════════════════════ -->
+      <div id="painel-tarefas" style="display:none;margin-top:36px">
+
+        <!-- Cabeçalho com info do planejamento selecionado -->
+        <div class="plan-detail-header">
+          <div>
+            <h2 id="painel-plan-title" style="font-size:1.25rem;font-weight:700;letter-spacing:-.02em"></h2>
+            <div id="painel-plan-meta" class="plan-meta" style="margin-top:8px"></div>
+            <p id="painel-plan-desc" class="plan-description"></p>
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0">
+            <button id="btn-nova-tarefa" class="btn btn-primary btn-sm">+ Nova Tarefa</button>
+            <button id="btn-fechar-painel" class="btn btn-secondary btn-sm">✕ Fechar</button>
+          </div>
+        </div>
+
+        <!-- Tabela de tarefas -->
+        <div class="tasks-panel">
+          <div class="tasks-panel-header">
+            <span class="tasks-panel-title">Tarefas</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <th>Prazo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tarefas-tbody">
+              <tr class="loading-row">
+                <td colspan="5"><span class="spinner"></span> Carregando…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- ══════════════════════════════════════════
+     MODAL — Novo / Editar Planejamento
+     ══════════════════════════════════════════ -->
+<div id="modal-plan-overlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-plan-title" class="modal-title">Novo Planejamento</h3>
+      <button id="close-modal-plan" class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div id="plan-alert" class="alert alert-error"></div>
+
+      <form id="form-plan">
+        <!-- Título -->
+        <div class="form-group">
+          <label class="form-label" for="plan-title">Título *</label>
+          <input id="plan-title" type="text" class="form-input" placeholder="Nome do planejamento" required>
+        </div>
+
+        <!-- Descrição -->
+        <div class="form-group">
+          <label class="form-label" for="plan-description">Descrição</label>
+          <textarea id="plan-description" class="form-textarea" placeholder="Descreva o objetivo deste planejamento…"></textarea>
+        </div>
+
+        <!-- Status e Prioridade lado a lado -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="plan-status">Status</label>
+            <select id="plan-status" class="form-select">
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em andamento</option>
+              <option value="done">Concluído</option>
+              <option value="cancelled">Cancelado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plan-priority">Prioridade</label>
+            <select id="plan-priority" class="form-select">
+              <option value="medium">Média</option>
+              <option value="high">Alta</option>
+              <option value="low">Baixa</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Datas lado a lado -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="plan-start">Data de Início</label>
+            <input id="plan-start" type="date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plan-due">Data de Prazo</label>
+            <input id="plan-due" type="date" class="form-input">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button id="cancel-plan" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="form-plan" class="btn btn-primary" style="width:auto">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL — Nova / Editar Tarefa
+     ══════════════════════════════════════════ -->
+<div id="modal-tarefa-overlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-tarefa-title" class="modal-title">Nova Tarefa</h3>
+      <button id="close-modal-tarefa" class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div id="tarefa-alert" class="alert alert-error"></div>
+
+      <form id="form-tarefa">
+        <!-- Título -->
+        <div class="form-group">
+          <label class="form-label" for="tarefa-title">Título *</label>
+          <input id="tarefa-title" type="text" class="form-input" placeholder="O que precisa ser feito?" required>
+        </div>
+
+        <!-- Descrição -->
+        <div class="form-group">
+          <label class="form-label" for="tarefa-description">Descrição</label>
+          <textarea id="tarefa-description" class="form-textarea" placeholder="Detalhes da tarefa…"></textarea>
+        </div>
+
+        <!-- Status e Prazo lado a lado -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="tarefa-status">Status</label>
+            <select id="tarefa-status" class="form-select">
+              <option value="pending">Pendente</option>
+              <option value="in_progress">Em andamento</option>
+              <option value="done">Concluída</option>
+              <option value="cancelled">Cancelada</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tarefa-due">Prazo</label>
+            <input id="tarefa-due" type="date" class="form-input">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button id="cancel-tarefa" class="btn btn-secondary">Cancelar</button>
+      <button type="submit" form="form-tarefa" class="btn btn-primary" style="width:auto">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/planejamentos.js"></script>
+</body>
+</html>

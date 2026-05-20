@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejar</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Tela de splash enquanto verifica a sessão */
+    .splash {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; gap: 16px;
+    }
+    .splash .logo-icon {
+      width: 56px; height: 56px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      animation: pulse 1.2s ease infinite;
+    }
+    .splash p { color: var(--text-muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+
+<!-- Tela de carregamento enquanto verifica sessão -->
+<div class="splash">
+  <div class="logo-icon">🗂️</div>
+  <p>Verificando sessão…</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+  /**
+   * index.html — ponto de entrada da aplicação.
+   * Verifica se há uma sessão ativa no Supabase:
+   *   - Se sim, redireciona para o dashboard.
+   *   - Se não, redireciona para o login.
+   */
+  (async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      window.location.href = 'dashboard.html';
+    } else {
+      window.location.href = 'login.html';
+    }
+  })();
+</script>
+</body>
+</html>

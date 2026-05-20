@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planejar — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ──────────────────────────────────────────
+     DASHBOARD — visão geral com cards de resumo
+     ────────────────────────────────────────── -->
+<div class="app-layout">
+
+  <!-- ── Overlay para fechar sidebar no mobile ── -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- ══════════════════════════════
+       SIDEBAR — navegação lateral
+       ══════════════════════════════ -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🗂️</div>
+        <span class="logo-name">Planejar</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Menu</span>
+
+      <a href="dashboard.html" class="nav-item active">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+
+      <a href="planejamentos.html" class="nav-item">
+        <span class="nav-icon">🗂️</span> Planejamentos
+      </a>
+    </nav>
+
+    <!-- Info do usuário logado -->
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div style="overflow:hidden;flex:1">
+          <div class="user-name"  id="user-name">Carregando…</div>
+          <div class="user-email" id="user-email"></div>
+        </div>
+      </div>
+      <button id="btn-logout" class="btn btn-ghost" style="width:100%;margin-top:8px;justify-content:flex-start;gap:8px">
+        🚪 Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════
+       CONTEÚDO PRINCIPAL
+       ══════════════════════════════ -->
+  <div class="main-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="menu-toggle" class="menu-toggle">☰</button>
+        <span class="topbar-title">Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="planejamentos.html" class="btn btn-primary btn-sm">+ Novo Planejamento</a>
+      </div>
+    </header>
+
+    <div class="page-content">
+
+      <!-- ── Cards de Resumo ── -->
+      <div class="stats-grid">
+
+        <!-- Card: Total de Planejamentos -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Planejamentos</span>
+            <div class="stat-icon blue">🗂️</div>
+          </div>
+          <div class="stat-value loading" id="stat-total-plan"></div>
+        </div>
+
+        <!-- Card: Tarefas Pendentes -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Pendentes</span>
+            <div class="stat-icon amber">⏳</div>
+          </div>
+          <div class="stat-value loading" id="stat-pendentes"></div>
+        </div>
+
+        <!-- Card: Tarefas Concluídas -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Concluídas</span>
+            <div class="stat-icon green">✅</div>
+          </div>
+          <div class="stat-value loading" id="stat-concluidas"></div>
+        </div>
+
+        <!-- Card: Tarefas Atrasadas -->
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-label">Atrasadas</span>
+            <div class="stat-icon red">🔴</div>
+          </div>
+          <div class="stat-value loading" id="stat-atrasadas"></div>
+        </div>
+
+      </div>
+
+      <!-- ── Tabela de Planejamentos Recentes ── -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Planejamentos Recentes</h2>
+          <a href="planejamentos.html" class="btn btn-secondary btn-sm">Ver todos →</a>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Status</th>
+                <th>Prioridade</th>
+                <th>Prazo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="recentes-body">
+              <!-- Preenchido pelo dashboard.js -->
+              <tr class="loading-row">
+                <td colspan="5"><span class="spinner"></span> Carregando…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
